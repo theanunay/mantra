@@ -12,11 +12,11 @@ class InstituteManagementSystem {
         
         // Google Sheets Configuration
         this.googleConfig = {
-            clientId: "YOUR_CLIENT_ID_HERE", // Replace with actual Client ID for production
-            apiKey: "YOUR_API_KEY_HERE", // Replace with actual API Key for production
-            discoveryDocs: ["https://sheets.googleapis.com/$discovery/rest?version=v4"],
-            scopes: "https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file"
-        };
+    clientId: "494546394536-b3hq13dh2qpd6o2jrj0o2un9i3ffjdn3.apps.googleusercontent.com"
+    apiKey: "AIzaSyADP_Ed1S5EM2YiKbpN8qXMfy4y5a0lh2U", 
+ discoveryDocs: ["https://sheets.googleapis.com/$discovery/rest?version=v4"],
+    scopes: "https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file"
+};
         
         this.isGoogleSheetsConnected = false;
         this.currentUser = null;
