@@ -3,355 +3,171 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mantra Computer Institute - Management System</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <title>Institute Management System</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#"><i class="bi bi-laptop me-2"></i>Mantra Computer Institute</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="#" data-section="dashboard">Dashboard</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" data-section="admissions">Admissions</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" data-section="batches">Batches</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" data-section="students">Students</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" data-section="ledger">Ledger</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" data-section="payments">Payments</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" data-section="reports">Reports</a>
-                    </li>
-                </ul>
-                <div class="navbar-nav">
-                    <!-- Google Sheets Status -->
-                    <div class="nav-item me-2" id="googleSheetsStatus">
-                        <span class="badge bg-secondary">
-                            <i class="bi bi-cloud-slash"></i> Not Connected
-                        </span>
+    <div class="container-fluid">
+        <div class="row">
+            <nav class="col-md-2 d-none d-md-block bg-light sidebar">
+                <div class="position-sticky pt-3">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link active" data-section="dashboard" href="#">
+                                <i class="bi bi-house-door"></i> Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-section="admissions" href="#">
+                                <i class="bi bi-person-plus"></i> Admissions
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-section="students" href="#">
+                                <i class="bi bi-people"></i> Students
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-section="batches" href="#">
+                                <i class="bi bi-collection"></i> Batches
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-section="payments" href="#">
+                                <i class="bi bi-cash-coin"></i> Payments
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-section="ledger" href="#">
+                                <i class="bi bi-book"></i> Ledger
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-section="reports" href="#">
+                                <i class="bi bi-file-earmark-bar-graph"></i> Reports
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-section="settings" href="#">
+                                <i class="bi bi-gear"></i> Settings
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Dashboard</h1>
+                    <div id="googleSheetsStatus">
+                        <span class="badge bg-secondary"><i class="bi bi-cloud-slash"></i> Not Connected</span>
                     </div>
-                    <button class="btn btn-outline-light btn-sm me-2" onclick="exportAllData()">
-                        <i class="bi bi-download"></i> Export Data
-                    </button>
-                    <button class="btn btn-outline-light btn-sm" onclick="showImportModal()">
-                        <i class="bi bi-upload"></i> Import Data
-                    </button>
                 </div>
-            </div>
-        </div>
-    </nav>
 
-    <!-- Main Content -->
-    <div class="container-fluid mt-4">
-        <!-- Dashboard Section -->
-        <div id="dashboard-section" class="section active">
-            <div class="row mb-4">
-                <div class="col-12">
-                    <h2><i class="bi bi-speedometer2 me-2"></i>Dashboard</h2>
-                    <p class="text-muted">Welcome to Mantra Computer Institute Management System</p>
-                </div>
-            </div>
-
-            <!-- Google Sheets Integration Card -->
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="card google-sheets-card">
-                        <div class="card-header">
-                            <h5 class="mb-0">
-                                <i class="bi bi-google me-2"></i>Google Sheets Integration
-                                <span class="badge bg-primary ms-2" id="connectionBadge">Disconnected</span>
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            <div id="googleSheetsConnected" class="google-sheets-section" style="display: none;">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <p class="mb-2"><strong>Connected as:</strong> <span id="userEmail"></span></p>
-                                        <p class="mb-3"><strong>Last Sync:</strong> <span id="lastSyncTime">Never</span></p>
-                                    </div>
-                                    <div class="col-md-6 text-end">
-                                        <button class="btn btn-success btn-sm me-2" onclick="syncAllData()">
-                                            <i class="bi bi-arrow-repeat"></i> Sync All Data
-                                        </button>
-                                        <button class="btn btn-outline-danger btn-sm" onclick="disconnectGoogleSheets()">
-                                            <i class="bi bi-box-arrow-right"></i> Disconnect
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="row mt-3">
-                                    <div class="col-md-3">
-                                        <button class="btn btn-outline-primary btn-sm w-100" onclick="exportStudentsToSheets()">
-                                            <i class="bi bi-people"></i> Export Students
-                                        </button>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <button class="btn btn-outline-success btn-sm w-100" onclick="exportBatchesToSheets()">
-                                            <i class="bi bi-collection"></i> Export Batches
-                                        </button>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <button class="btn btn-outline-warning btn-sm w-100" onclick="exportTransactionsToSheets()">
-                                            <i class="bi bi-cash"></i> Export Payments
-                                        </button>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <button class="btn btn-outline-info btn-sm w-100" onclick="importFromSheets()">
-                                            <i class="bi bi-cloud-download"></i> Import Data
-                                        </button>
-                                    </div>
+                <div id="dashboard-section" class="section active">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="card text-white bg-primary mb-3">
+                                <div class="card-header">Total Students</div>
+                                <div class="card-body">
+                                    <h5 class="card-title" id="totalStudents">0</h5>
                                 </div>
                             </div>
-                            <div id="googleSheetsDisconnected" class="google-sheets-section text-center">
-                                <div class="mb-3">
-                                    <i class="bi bi-google" style="font-size: 3rem; color: var(--color-primary);"></i>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card text-white bg-success mb-3">
+                                <div class="card-header">Active Batches</div>
+                                <div class="card-body">
+                                    <h5 class="card-title" id="activeBatches">0</h5>
                                 </div>
-                                <h6>Connect to Google Sheets</h6>
-                                <p class="text-muted mb-3">Sync your data with Google Sheets for cloud access and collaboration</p>
-                                <button class="btn btn-primary" onclick="connectGoogleSheets()">
-                                    <i class="bi bi-google"></i> Connect to Google Sheets
-                                </button>
-                                <div class="mt-3">
-                                    <small class="text-muted">
-                                        <i class="bi bi-info-circle"></i> 
-                                        You'll need to authorize access to your Google account
-                                    </small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card text-white bg-info mb-3">
+                                <div class="card-header">Total Collection</div>
+                                <div class="card-body">
+                                    <h5 class="card-title" id="totalCollection">₹0</h5>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card text-white bg-danger mb-3">
+                                <div class="card-header">Outstanding Dues</div>
+                                <div class="card-body">
+                                    <h5 class="card-title" id="outstandingDues">₹0</h5>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            
-            <!-- Key Metrics Cards -->
-            <div class="row mb-4">
-                <div class="col-md-3 mb-3">
-                    <div class="card metric-card">
-                        <div class="card-body text-center">
-                            <i class="bi bi-people-fill metric-icon text-primary"></i>
-                            <h3 class="metric-number" id="totalStudents">0</h3>
-                            <p class="metric-label">Total Students</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <div class="card metric-card">
-                        <div class="card-body text-center">
-                            <i class="bi bi-collection metric-icon text-success"></i>
-                            <h3 class="metric-number" id="activeBatches">0</h3>
-                            <p class="metric-label">Active Batches</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <div class="card metric-card">
-                        <div class="card-body text-center">
-                            <i class="bi bi-currency-rupee metric-icon text-warning"></i>
-                            <h3 class="metric-number" id="totalCollection">₹0</h3>
-                            <p class="metric-label">Total Collection</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3 mb-3">
-                    <div class="card metric-card">
-                        <div class="card-body text-center">
-                            <i class="bi bi-exclamation-triangle metric-icon text-danger"></i>
-                            <h3 class="metric-number" id="outstandingDues">₹0</h3>
-                            <p class="metric-label">Outstanding Dues</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
-            <!-- Quick Actions -->
-            <div class="row">
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <h5 class="mb-0">Quick Actions</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="d-flex flex-wrap gap-2">
-                                <button class="btn btn-primary" onclick="showSection('admissions')">
-                                    <i class="bi bi-person-plus"></i> New Admission
-                                </button>
-                                <button class="btn btn-success" onclick="showSection('batches')">
-                                    <i class="bi bi-plus-circle"></i> Create Batch
-                                </button>
-                                <button class="btn btn-warning" onclick="showSection('payments')">
-                                    <i class="bi bi-cash"></i> Record Payment
-                                </button>
-                                <button class="btn btn-info" onclick="showSection('reports')">
-                                    <i class="bi bi-graph-up"></i> View Reports
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Admissions Section -->
-        <div id="admissions-section" class="section">
-            <div class="row mb-4">
-                <div class="col-12 d-flex justify-content-between align-items-center">
-                    <h2><i class="bi bi-person-plus me-2"></i>Student Admissions</h2>
-                    <button class="btn btn-outline-primary btn-sm" onclick="exportStudentsToSheets()" id="exportStudentsBtn" style="display: none;">
-                        <i class="bi bi-google"></i> Export to Sheets
-                    </button>
-                </div>
-            </div>
-            
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="mb-0">New Student Registration</h5>
-                </div>
-                <div class="card-body">
+                <div id="admissions-section" class="section" style="display: none;">
+                    <h2>New Admission</h2>
                     <form id="admissionForm">
                         <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="studentName" class="form-label">Full Name *</label>
-                                <input type="text" class="form-control" id="studentName" required>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="studentName" class="form-label">Full Name</label>
+                                    <input type="text" class="form-control" id="studentName" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="studentEmail" class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="studentEmail" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="studentPhone" class="form-label">Phone</label>
+                                    <input type="tel" class="form-control" id="studentPhone" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="studentAddress" class="form-label">Address</label>
+                                    <textarea class="form-control" id="studentAddress" rows="3" required></textarea>
+                                </div>
                             </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="studentEmail" class="form-label">Email *</label>
-                                <input type="email" class="form-control" id="studentEmail" required>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="studentPhone" class="form-label">Phone Number *</label>
-                                <input type="tel" class="form-control" id="studentPhone" required>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="studentDOB" class="form-label">Date of Birth *</label>
-                                <input type="date" class="form-control" id="studentDOB" required>
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="studentAddress" class="form-label">Address *</label>
-                            <textarea class="form-control" id="studentAddress" rows="2" required></textarea>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="studentCourse" class="form-label">Course *</label>
-                                <select class="form-control" id="studentCourse" required>
-                                    <option value="">Select Course</option>
-                                    <option value="Basic Computer">ADCA</option>
-                                    <option value="Advanced Excel">Advanced Excel</option>
-                                    <option value="Web Development">Web Development</option>
-                                    <option value="Graphic Design">Graphic Design</option>
-                                    <option value="Tally">Tally Prime</option>
-                                    <option value="Data Entry">Data Entry</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="studentBatch" class="form-label">Batch *</label>
-                                <select class="form-control" id="studentBatch" required>
-                                    <option value="">Select Batch</option>
-                                </select>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="studentDOB" class="form-label">Date of Birth</label>
+                                    <input type="date" class="form-control" id="studentDOB" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="studentCourse" class="form-label">Course</label>
+                                    <select class="form-select" id="studentCourse" required>
+                                        <option value="">Select Course</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="studentBatch" class="form-label">Batch</label>
+                                    <select class="form-select" id="studentBatch" required>
+                                        <option value="">Select Batch</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
-                        <div class="d-flex justify-content-between">
-                            <button type="button" class="btn btn-secondary" onclick="clearAdmissionForm()">Clear</button>
-                            <button type="submit" class="btn btn-primary">Register Student</button>
-                        </div>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                        <button type="button" class="btn btn-secondary" onclick="clearAdmissionForm()">Clear</button>
                     </form>
                 </div>
-            </div>
-        </div>
 
-        <!-- Batches Section -->
-        <div id="batches-section" class="section">
-            <div class="row mb-4">
-                <div class="col-12 d-flex justify-content-between align-items-center">
-                    <h2><i class="bi bi-collection me-2"></i>Batch Management</h2>
-                    <div>
-                        <button class="btn btn-outline-primary btn-sm me-2" onclick="exportBatchesToSheets()" id="exportBatchesBtn" style="display: none;">
-                            <i class="bi bi-google"></i> Export to Sheets
-                        </button>
-                        <button class="btn btn-primary" onclick="showBatchModal()">
-                            <i class="bi bi-plus"></i> Create New Batch
-                        </button>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="card">
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-striped" id="batchesTable">
-                            <thead>
-                                <tr>
-                                    <th>Batch Name</th>
-                                    <th>Course</th>
-                                    <th>Start Date</th>
-                                    <th>End Date</th>
-                                    <th>Total Fees</th>
-                                    <th>Students</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Students Section -->
-        <div id="students-section" class="section">
-            <div class="row mb-4">
-                <div class="col-12 d-flex justify-content-between align-items-center">
-                    <h2><i class="bi bi-people me-2"></i>Students List</h2>
-                    <button class="btn btn-outline-primary btn-sm" onclick="exportStudentsToSheets()" id="exportStudentsBtn2" style="display: none;">
-                        <i class="bi bi-google"></i> Export to Sheets
-                    </button>
-                </div>
-            </div>
-            
-            <div class="card mb-3">
-                <div class="card-body">
-                    <div class="row">
+                <div id="students-section" class="section" style="display: none;">
+                    <h2>Students</h2>
+                    <div class="row mb-3">
                         <div class="col-md-4">
                             <input type="text" class="form-control" id="studentSearch" placeholder="Search students...">
                         </div>
                         <div class="col-md-4">
-                            <select class="form-control" id="studentBatchFilter">
+                            <select class="form-select" id="studentBatchFilter">
                                 <option value="">All Batches</option>
                             </select>
                         </div>
                         <div class="col-md-4">
-                            <select class="form-control" id="studentStatusFilter">
-                                <option value="">All Status</option>
+                            <select class="form-select" id="studentStatusFilter">
+                                <option value="">All Statuses</option>
                                 <option value="Active">Active</option>
                                 <option value="Inactive">Inactive</option>
                                 <option value="Completed">Completed</option>
                             </select>
                         </div>
                     </div>
-                </div>
-            </div>
-            
-            <div class="card">
-                <div class="card-body">
                     <div class="table-responsive">
                         <table class="table table-striped" id="studentsTable">
                             <thead>
@@ -362,7 +178,7 @@
                                     <th>Batch</th>
                                     <th>Phone</th>
                                     <th>Total Fees</th>
-                                    <th>Paid Amount</th>
+                                    <th>Paid</th>
                                     <th>Outstanding</th>
                                     <th>Status</th>
                                     <th>Actions</th>
@@ -372,302 +188,190 @@
                         </table>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <!-- Ledger Section -->
-        <div id="ledger-section" class="section">
-            <div class="row mb-4">
-                <div class="col-12">
-                    <h2><i class="bi bi-journal-text me-2"></i>Student Ledger</h2>
+                <div id="batches-section" class="section" style="display: none;">
+                    <h2>Batches</h2>
+                    <button class="btn btn-primary mb-3" onclick="showBatchModal()">Add Batch</button>
+                    <div class="table-responsive">
+                        <table class="table table-striped" id="batchesTable">
+                            <thead>
+                                <tr>
+                                    <th>Batch Name</th>
+                                    <th>Course</th>
+                                    <th>Start Date</th>
+                                    <th>End Date</th>
+                                    <th>Fees</th>
+                                    <th>Students</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
                 </div>
-            </div>
-            
-            <div class="card mb-3">
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-4">
-                            <select class="form-control" id="ledgerStudentFilter">
+
+                <div id="payments-section" class="section" style="display: none;">
+                    <h2>Record Payment</h2>
+                    <form id="paymentForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="paymentStudent" class="form-label">Student</label>
+                                    <select class="form-select" id="paymentStudent" required>
+                                        <option value="">Select Student</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="paymentAmount" class="form-label">Amount</label>
+                                    <input type="number" class="form-control" id="paymentAmount" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="paymentMode" class="form-label">Payment Mode</label>
+                                    <select class="form-select" id="paymentMode" required>
+                                        <option value="">Select Mode</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="paymentDate" class="form-label">Date</label>
+                                    <input type="date" class="form-control" id="paymentDate" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="paymentReference" class="form-label">Reference No.</label>
+                                    <input type="text" class="form-control" id="paymentReference">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="paymentDescription" class="form-label">Description</label>
+                                    <input type="text" class="form-control" id="paymentDescription" required>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Record Payment</button>
+                        <button type="button" class="btn btn-secondary" onclick="clearPaymentForm()">Clear</button>
+                    </form>
+                </div>
+
+                <div id="ledger-section" class="section" style="display: none;">
+                    <h2>Ledger</h2>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="ledgerStudentFilter" class="form-label">Student</label>
+                            <select class="form-select" id="ledgerStudentFilter">
                                 <option value="">Select Student</option>
                             </select>
                         </div>
-                        <div class="col-md-4">
-                            <select class="form-control" id="ledgerBatchFilter">
+                        <div class="col-md-6">
+                            <label for="ledgerBatchFilter" class="form-label">Batch</label>
+                            <select class="form-select" id="ledgerBatchFilter">
                                 <option value="">Select Batch</option>
                             </select>
                         </div>
-                        <div class="col-md-4">
-                            <button class="btn btn-primary" onclick="generateLedger()">Generate Ledger</button>
-                        </div>
                     </div>
+                    <button class="btn btn-primary" onclick="generateLedger()">Generate Ledger</button>
+                    <div id="ledgerContent" class="mt-3"></div>
                 </div>
-            </div>
-            
-            <div class="card">
-                <div class="card-body">
-                    <div id="ledgerContent">
-                        <p class="text-muted text-center">Select a student or batch to view ledger</p>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <!-- Payments Section -->
-        <div id="payments-section" class="section">
-            <div class="row mb-4">
-                <div class="col-12 d-flex justify-content-between align-items-center">
-                    <h2><i class="bi bi-cash me-2"></i>Fee Payment System</h2>
-                    <button class="btn btn-outline-primary btn-sm" onclick="exportTransactionsToSheets()" id="exportPaymentsBtn" style="display: none;">
-                        <i class="bi bi-google"></i> Export to Sheets
-                    </button>
-                </div>
-            </div>
-            
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="mb-0">Record New Payment</h5>
-                </div>
-                <div class="card-body">
-                    <form id="paymentForm">
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="paymentStudent" class="form-label">Student *</label>
-                                <select class="form-control" id="paymentStudent" required>
-                                    <option value="">Select Student</option>
+                <div id="reports-section" class="section" style="display: none;">
+                    <h2>Reports</h2>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h4>Batch Report</h4>
+                            <div class="mb-3">
+                                <label for="reportBatchFilter" class="form-label">Batch</label>
+                                <select class="form-select" id="reportBatchFilter">
+                                    <option value="">Select Batch</option>
                                 </select>
                             </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="paymentAmount" class="form-label">Amount *</label>
-                                <input type="number" class="form-control" id="paymentAmount" required>
-                            </div>
+                            <button class="btn btn-primary" onclick="generateBatchReport()">Generate</button>
                         </div>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="paymentMode" class="form-label">Payment Mode *</label>
-                                <select class="form-control" id="paymentMode" required>
-                                    <option value="">Select Mode</option>
-                                    <option value="Cash">Cash</option>
-                                    <option value="Cheque">Cheque</option>
-                                    <option value="Bank Transfer">Bank Transfer</option>
-                                    <option value="UPI">UPI</option>
-                                    <option value="Card">Card</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="paymentDate" class="form-label">Payment Date *</label>
-                                <input type="date" class="form-control" id="paymentDate" required>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="paymentReference" class="form-label">Reference Number</label>
-                                <input type="text" class="form-control" id="paymentReference">
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="paymentDescription" class="form-label">Description *</label>
-                                <input type="text" class="form-control" id="paymentDescription" required>
-                            </div>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                            <button type="button" class="btn btn-secondary" onclick="clearPaymentForm()">Clear</button>
-                            <button type="submit" class="btn btn-primary">Record Payment</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        <!-- Reports Section -->
-        <div id="reports-section" class="section">
-            <div class="row mb-4">
-                <div class="col-12">
-                    <h2><i class="bi bi-graph-up me-2"></i>Reports & Analytics</h2>
-                </div>
-            </div>
-            
-            <div class="row">
-                <div class="col-md-6 mb-4">
-                    <div class="card">
-                        <div class="card-header">
-                            <h5 class="mb-0">Batch-wise Reports</h5>
-                        </div>
-                        <div class="card-body">
-                            <select class="form-control mb-3" id="reportBatchFilter">
-                                <option value="">Select Batch</option>
-                            </select>
-                            <button class="btn btn-primary" onclick="generateBatchReport()">Generate Report</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 mb-4">
-                    <div class="card">
-                        <div class="card-header">
-                            <h5 class="mb-0">Payment Summary</h5>
-                        </div>
-                        <div class="card-body">
+                        <div class="col-md-6">
+                            <h4>Payment Report</h4>
                             <div class="row">
-                                <div class="col-6">
-                                    <input type="date" class="form-control mb-2" id="reportStartDate">
+                                <div class="col-md-6">
+                                    <label for="reportStartDate" class="form-label">Start Date</label>
+                                    <input type="date" class="form-control" id="reportStartDate">
                                 </div>
-                                <div class="col-6">
-                                    <input type="date" class="form-control mb-2" id="reportEndDate">
+                                <div class="col-md-6">
+                                    <label for="reportEndDate" class="form-label">End Date</label>
+                                    <input type="date" class="form-control" id="reportEndDate">
                                 </div>
                             </div>
-                            <button class="btn btn-primary" onclick="generatePaymentReport()">Generate Report</button>
+                            <button class="btn btn-primary mt-3" onclick="generatePaymentReport()">Generate</button>
                         </div>
                     </div>
+                    <div id="reportContent" class="mt-3"></div>
                 </div>
-            </div>
-            
-            <div class="card">
-                <div class="card-body">
-                    <div id="reportContent">
-                        <p class="text-muted text-center">Select a report type to generate</p>
+
+                <div id="settings-section" class="section" style="display: none;">
+                    <h2>Settings</h2>
+                    <div id="googleSheetsDisconnected">
+                        <button class="btn btn-primary" onclick="connectGoogleSheets()">Connect to Google Sheets</button>
+                    </div>
+                    <div id="googleSheetsConnected" style="display: none;">
+                        <p>Connected as <strong id="userEmail"></strong></p>
+                        <p>Last sync: <span id="lastSyncTime"></span></p>
+                        <button class="btn btn-danger" onclick="disconnectGoogleSheets()">Disconnect</button>
+                        <button class="btn btn-success" onclick="syncAllData()">Sync All Data</button>
+                        <button class="btn btn-info" onclick="importFromSheets()">Import from Sheets</button>
                     </div>
                 </div>
-            </div>
+            </main>
         </div>
     </div>
 
-    <!-- Batch Modal -->
     <div class="modal fade" id="batchModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Create New Batch</h5>
+                    <h5 class="modal-title">Add Batch</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
                     <form id="batchForm">
                         <div class="mb-3">
-                            <label for="batchName" class="form-label">Batch Name *</label>
+                            <label for="batchName" class="form-label">Batch Name</label>
                             <input type="text" class="form-control" id="batchName" required>
                         </div>
                         <div class="mb-3">
-                            <label for="batchCourse" class="form-label">Course *</label>
-                            <select class="form-control" id="batchCourse" required>
+                            <label for="batchCourse" class="form-label">Course</label>
+                            <select class="form-select" id="batchCourse" required>
                                 <option value="">Select Course</option>
-                                <option value="Basic Computer">ADCA</option>
-                                <option value="Advanced Excel">Advanced Excel</option>
-                                <option value="Web Development">Web Development</option>
-                                <option value="Graphic Design">Graphic Design</option>
-                                <option value="Tally">Tally Prime</option>
-                                <option value="Data Entry">Data Entry</option>
                             </select>
                         </div>
-                        <div class="row">
-                            <div class="col-6">
-                                <div class="mb-3">
-                                    <label for="batchStartDate" class="form-label">Start Date *</label>
-                                    <input type="date" class="form-control" id="batchStartDate" required>
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="mb-3">
-                                    <label for="batchEndDate" class="form-label">End Date *</label>
-                                    <input type="date" class="form-control" id="batchEndDate" required>
-                                </div>
-                            </div>
+                        <div class="mb-3">
+                            <label for="batchStartDate" class="form-label">Start Date</label>
+                            <input type="date" class="form-control" id="batchStartDate" required>
                         </div>
-                        <div class="row">
-                            <div class="col-6">
-                                <div class="mb-3">
-                                    <label for="batchFees" class="form-label">Total Fees *</label>
-                                    <input type="number" class="form-control" id="batchFees" required>
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="mb-3">
-                                    <label for="batchMaxStudents" class="form-label">Max Students *</label>
-                                    <input type="number" class="form-control" id="batchMaxStudents" required>
-                                </div>
-                            </div>
+                        <div class="mb-3">
+                            <label for="batchEndDate" class="form-label">End Date</label>
+                            <input type="date" class="form-control" id="batchEndDate" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="batchFees" class="form-label">Total Fees</label>
+                            <input type="number" class="form-control" id="batchFees" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="batchMaxStudents" class="form-label">Max Students</label>
+                            <input type="number" class="form-control" id="batchMaxStudents" required>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" onclick="saveBatch()">Create Batch</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Import Modal -->
-    <div class="modal fade" id="importModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Import Data</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <p>Choose data type to import:</p>
-                    <div class="d-grid gap-2">
-                        <button class="btn btn-outline-primary" onclick="downloadTemplate('students')">
-                            <i class="bi bi-download"></i> Download Students Template
-                        </button>
-                        <button class="btn btn-outline-primary" onclick="downloadTemplate('batches')">
-                            <i class="bi bi-download"></i> Download Batches Template
-                        </button>
-                        <input type="file" class="form-control" accept=".csv,.xlsx,.xls" id="importFile">
-                        <button class="btn btn-primary" onclick="importData()">
-                            <i class="bi bi-upload"></i> Import Data
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Google Sheets Setup Modal -->
-    <div class="modal fade" id="setupModal" tabindex="-1">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Google Sheets Setup Instructions</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="alert alert-info">
-                        <i class="bi bi-info-circle"></i> 
-                        To use Google Sheets integration, you need to set up Google API credentials.
-                    </div>
-                    <ol>
-                        <li>Go to <a href="https://console.cloud.google.com/" target="_blank">Google Cloud Console</a></li>
-                        <li>Create a new project or select an existing one</li>
-                        <li>Enable the Google Sheets API and Google Drive API</li>
-                        <li>Create OAuth 2.0 credentials for web application</li>
-                        <li>Add your domain to authorized origins</li>
-                        <li>Copy the Client ID and update the configuration</li>
-                    </ol>
-                    <div class="alert alert-warning">
-                        <strong>Current Status:</strong> Demo mode - Click "Connect to Google Sheets" to simulate the connection.
-                        <br>Replace CLIENT_ID in the code with your actual Google API Client ID for production use.
-                    </div>
-                </div>
-                <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" onclick="connectGoogleSheets()">Try Demo Connection</button>
+                    <button type="button" class="btn btn-primary" onclick="saveBatch()">Save Batch</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Loading Overlay -->
-    <div id="loadingOverlay" class="loading-overlay" style="display: none;">
-        <div class="loading-spinner">
-            <div class="spinner-border text-primary" role="status">
-                <span class="sr-only">Loading...</span>
-            </div>
-            <p class="mt-3">Syncing with Google Sheets...</p>
-        </div>
+    <div id="loadingOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; color: white; text-align: center; padding-top: 20%;">
+        <p>Loading...</p>
     </div>
 
-    <!-- Google APIs -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://apis.google.com/js/api.js"></script>
-    <script src="https://accounts.google.com/gsi/client"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="app.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
