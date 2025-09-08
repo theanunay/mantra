@@ -5,17 +5,18 @@ class InstituteManagementSystem {
         this.batches = [];
         this.transactions = [];
         this.courses = [
-            "ADCA", "Advanced Excel", "Web Development", 
-            "Graphic Design", "Tally Prime", "Data Entry"
+            "Basic Computer", "Advanced Excel", "Web Development", 
+            "Graphic Design", "Tally", "Data Entry"
         ];
         this.paymentModes = ["Cash", "Cheque", "Bank Transfer", "UPI", "Card"];
         
         // Google Sheets Configuration
-        this.googleConfig = {clientId: "494546394536-b3hq13dh2qpd6o2jrj0o2un9i3ffjdn3.apps.googleusercontent.com",
-            apiKey: "AIzaSyADP_Ed1S5EM2YiKbpN8qXMfy4y5a0lh2U", 
-             discoveryDocs: ["https://sheets.googleapis.com/$discovery/rest?version=v4"],
-                scopes: "https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file"
-};
+        this.googleConfig = {
+            clientId: "494546394536-b3hq13dh2qpd6o2jrj0o2un9i3ffjdn3.apps.googleusercontent.com",
+            apiKey: "AIzaSyADP_Ed1S5EM2YiKbpN8qXMfy4y5a0lh2U",
+            discoveryDocs: ["https://sheets.googleapis.com/$discovery/rest?version=v4"],
+            scopes: "https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file"
+        };
         
         this.isGoogleSheetsConnected = false;
         this.currentUser = null;
@@ -42,7 +43,6 @@ class InstituteManagementSystem {
     // Google Sheets API Initialization
     async initGoogleAPI() {
         try {
-            // Load the Google API client and auth2 libraries
             await new Promise((resolve, reject) => {
                 gapi.load('client:auth2', resolve);
             });
@@ -53,18 +53,6 @@ class InstituteManagementSystem {
                 discoveryDocs: this.googleConfig.discoveryDocs,
                 scope: this.googleConfig.scopes
             });
-
-            // Optionally, check if already signed in
-            const authInstance = gapi.auth2.getAuthInstance();
-            if (authInstance.isSignedIn.get()) {
-                this.isGoogleSheetsConnected = true;
-                const user = authInstance.currentUser.get();
-                this.currentUser = user.getBasicProfile();
-                this.lastSyncTime = new Date().toISOString();
-                this.updateGoogleSheetsUI();
-            }
-
-            console.log('Google API initialized');
         } catch (error) {
             console.error('Error initializing Google API:', error);
             this.showAlert('Google Sheets API initialization failed. Running in offline mode.', 'warning');
@@ -80,7 +68,10 @@ class InstituteManagementSystem {
             const user = await authInstance.signIn();
 
             this.isGoogleSheetsConnected = true;
-            this.currentUser = user.getBasicProfile();
+            this.currentUser = {
+                email: user.getBasicProfile().getEmail(),
+                name: user.getBasicProfile().getName()
+            };
             this.lastSyncTime = new Date().toISOString();
 
             this.updateGoogleSheetsUI();
@@ -89,7 +80,6 @@ class InstituteManagementSystem {
 
             // Create or locate the management spreadsheet
             await this.createMantraSpreadsheet();
-
         } catch (error) {
             console.error('Error connecting to Google Sheets:', error);
             this.hideLoadingOverlay();
@@ -117,24 +107,31 @@ class InstituteManagementSystem {
     // Create Mantra Institute Spreadsheet
     async createMantraSpreadsheet() {
         try {
-            // Create a new spreadsheet
-            const response = await gapi.client.sheets.spreadsheets.create({
-                properties: {
-                    title: `Mantra Computer Institute - ${new Date().toLocaleDateString()}`
-                },
-                sheets: [
-                    { properties: { title: 'Students' } },
-                    { properties: { title: 'Batches' } },
-                    { properties: { title: 'Transactions' } },
-                    { properties: { title: 'Dashboard' } }
-                ]
-            });
+            // Check if spreadsheetId is already saved in localStorage
+            let spreadsheetId = localStorage.getItem('mantra_spreadsheet_id');
+            if (!spreadsheetId) {
+                const response = await gapi.client.sheets.spreadsheets.create({
+                    properties: {
+                        title: `Mantra Computer Institute - ${new Date().toLocaleDateString()}`
+                    },
+                    sheets: [
+                        { properties: { title: 'Students' } },
+                        { properties: { title: 'Batches' } },
+                        { properties: { title: 'Transactions' } },
+                        { properties: { title: 'Dashboard' } }
+                    ]
+                });
 
-            this.spreadsheetId = response.result.spreadsheetId;
+                spreadsheetId = response.result.spreadsheetId;
+                localStorage.setItem('mantra_spreadsheet_id', spreadsheetId);
 
-            // Set up headers for each sheet
-            await this.setupSheetHeaders();
+                this.spreadsheetId = spreadsheetId;
 
+                // Set up headers for each sheet
+                await this.setupSheetHeaders();
+            } else {
+                this.spreadsheetId = spreadsheetId;
+            }
         } catch (error) {
             console.error('Error creating spreadsheet:', error);
             throw error;
@@ -216,7 +213,6 @@ class InstituteManagementSystem {
             this.hideLoadingOverlay();
             this.showAlert(`Successfully exported ${this.students.length} students to Google Sheets!`, 'success');
             this.updateLastSyncTime();
-
         } catch (error) {
             console.error('Error exporting students:', error);
             this.hideLoadingOverlay();
@@ -263,7 +259,6 @@ class InstituteManagementSystem {
             this.hideLoadingOverlay();
             this.showAlert(`Successfully exported ${this.batches.length} batches to Google Sheets!`, 'success');
             this.updateLastSyncTime();
-
         } catch (error) {
             console.error('Error exporting batches:', error);
             this.hideLoadingOverlay();
@@ -310,7 +305,6 @@ class InstituteManagementSystem {
             this.hideLoadingOverlay();
             this.showAlert(`Successfully exported ${this.transactions.length} transactions to Google Sheets!`, 'success');
             this.updateLastSyncTime();
-
         } catch (error) {
             console.error('Error exporting transactions:', error);
             this.hideLoadingOverlay();
@@ -334,7 +328,6 @@ class InstituteManagementSystem {
 
             this.hideLoadingOverlay();
             this.showAlert('All data synchronized successfully!', 'success');
-
         } catch (error) {
             console.error('Error syncing data:', error);
             this.hideLoadingOverlay();
@@ -378,12 +371,58 @@ class InstituteManagementSystem {
             this.showAlert('Data import completed successfully!', 'success');
             this.updateDashboard();
             this.renderTables();
-
         } catch (error) {
             console.error('Error importing data:', error);
             this.hideLoadingOverlay();
             this.showAlert('Error importing data: ' + error.message, 'error');
         }
+    }
+
+    // Add this method to process imported data from Google Sheets
+    processImportedData(students, batches, transactions) {
+        if (students) {
+            this.students = students.map(row => ({
+                admissionNumber: row[0],
+                name: row[1],
+                email: row[2],
+                phone: row[3],
+                address: row[4],
+                dateOfBirth: row[5],
+                course: row[6],
+                batchId: this.batches.find(b => b.batchName === row[7])?.id || '',
+                status: row[8],
+                totalFees: Number(row[9]),
+                paidAmount: Number(row[10]),
+                outstandingAmount: Number(row[11])
+            }));
+        }
+        if (batches) {
+            this.batches = batches.map(row => ({
+                id: row[0],
+                batchName: row[1],
+                course: row[2],
+                startDate: row[3],
+                endDate: row[4],
+                totalFees: Number(row[5]),
+                maxStudents: Number(row[6]),
+                currentStudents: Number(row[7]),
+                status: row[8]
+            }));
+        }
+        if (transactions) {
+            this.transactions = transactions.map(row => ({
+                id: row[0],
+                studentId: row[1],
+                admissionNumber: row[2],
+                date: row[3],
+                description: row[4],
+                amount: Number(row[5]),
+                type: row[6],
+                paymentMode: row[7],
+                referenceNumber: row[8]
+            }));
+        }
+        this.saveData();
     }
 
     // Update Google Sheets UI
