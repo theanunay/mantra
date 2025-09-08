@@ -42,23 +42,29 @@ class InstituteManagementSystem {
     // Google Sheets API Initialization
     async initGoogleAPI() {
         try {
-            // For demo purposes, we'll simulate the API initialization
-            // In production, replace this with actual Google API initialization
-            console.log('Google API initialized');
-            
-            // Uncomment for actual Google API integration:
-            
+            // Load the Google API client and auth2 libraries
             await new Promise((resolve, reject) => {
-                gapi.load('auth2:client', resolve);
+                gapi.load('client:auth2', resolve);
             });
-            
+
             await gapi.client.init({
                 apiKey: this.googleConfig.apiKey,
                 clientId: this.googleConfig.clientId,
                 discoveryDocs: this.googleConfig.discoveryDocs,
                 scope: this.googleConfig.scopes
             });
-            
+
+            // Optionally, check if already signed in
+            const authInstance = gapi.auth2.getAuthInstance();
+            if (authInstance.isSignedIn.get()) {
+                this.isGoogleSheetsConnected = true;
+                const user = authInstance.currentUser.get();
+                this.currentUser = user.getBasicProfile();
+                this.lastSyncTime = new Date().toISOString();
+                this.updateGoogleSheetsUI();
+            }
+
+            console.log('Google API initialized');
         } catch (error) {
             console.error('Error initializing Google API:', error);
             this.showAlert('Google Sheets API initialization failed. Running in offline mode.', 'warning');
@@ -69,39 +75,21 @@ class InstituteManagementSystem {
     async connectGoogleSheets() {
         try {
             this.showLoadingOverlay('Connecting to Google Sheets...');
-            
-            // Demo mode simulation
-            setTimeout(() => {
-                this.isGoogleSheetsConnected = true;
-                this.currentUser = {
-                    email: 'demo@example.com',
-                    name: 'Demo User'
-                };
-                this.lastSyncTime = new Date().toISOString();
-                this.updateGoogleSheetsUI();
-                this.hideLoadingOverlay();
-                this.showAlert('Successfully connected to Google Sheets! (Demo Mode)', 'success');
-                
-                // Create demo spreadsheet
-                this.createMantraSpreadsheet();
-            }, 2000);
-            
-            // Actual Google OAuth implementation:
-            
+
             const authInstance = gapi.auth2.getAuthInstance();
             const user = await authInstance.signIn();
-            
+
             this.isGoogleSheetsConnected = true;
             this.currentUser = user.getBasicProfile();
             this.lastSyncTime = new Date().toISOString();
-            
+
             this.updateGoogleSheetsUI();
             this.hideLoadingOverlay();
             this.showAlert('Successfully connected to Google Sheets!', 'success');
-            
+
             // Create or locate the management spreadsheet
             await this.createMantraSpreadsheet();
-            
+
         } catch (error) {
             console.error('Error connecting to Google Sheets:', error);
             this.hideLoadingOverlay();
@@ -111,26 +99,15 @@ class InstituteManagementSystem {
 
     disconnectGoogleSheets() {
         try {
-            // Demo mode
-            this.isGoogleSheetsConnected = false;
-            this.currentUser = null;
-            this.spreadsheetId = null;
-            this.lastSyncTime = null;
-            this.updateGoogleSheetsUI();
-            this.showAlert('Disconnected from Google Sheets', 'info');
-            
-            // Actual implementation:
-            
             const authInstance = gapi.auth2.getAuthInstance();
             authInstance.signOut();
-            
+
             this.isGoogleSheetsConnected = false;
             this.currentUser = null;
             this.spreadsheetId = null;
             this.lastSyncTime = null;
             this.updateGoogleSheetsUI();
             this.showAlert('Disconnected from Google Sheets', 'info');
-            
         } catch (error) {
             console.error('Error disconnecting from Google Sheets:', error);
             this.showAlert('Error disconnecting: ' + error.message, 'error');
@@ -140,12 +117,7 @@ class InstituteManagementSystem {
     // Create Mantra Institute Spreadsheet
     async createMantraSpreadsheet() {
         try {
-            // Demo mode - simulate spreadsheet creation
-            this.spreadsheetId = 'demo_spreadsheet_id_12345';
-            console.log('Created demo spreadsheet:', this.spreadsheetId);
-            
-            // Actual implementation:
-            
+            // Create a new spreadsheet
             const response = await gapi.client.sheets.spreadsheets.create({
                 properties: {
                     title: `Mantra Computer Institute - ${new Date().toLocaleDateString()}`
@@ -157,12 +129,12 @@ class InstituteManagementSystem {
                     { properties: { title: 'Dashboard' } }
                 ]
             });
-            
+
             this.spreadsheetId = response.result.spreadsheetId;
-            
+
             // Set up headers for each sheet
             await this.setupSheetHeaders();
-            
+
         } catch (error) {
             console.error('Error creating spreadsheet:', error);
             throw error;
@@ -189,11 +161,6 @@ class InstituteManagementSystem {
             ]
         };
 
-        // Demo mode - just log the headers
-        console.log('Demo: Setting up sheet headers', headers);
-        
-        // Actual implementation:
-        
         for (const [sheetName, headerRow] of Object.entries(headers)) {
             await gapi.client.sheets.spreadsheets.values.update({
                 spreadsheetId: this.spreadsheetId,
@@ -202,7 +169,6 @@ class InstituteManagementSystem {
                 resource: { values: [headerRow] }
             });
         }
-        
     }
 
     // Export Students to Google Sheets
@@ -214,7 +180,7 @@ class InstituteManagementSystem {
 
         try {
             this.showLoadingOverlay('Exporting students to Google Sheets...');
-            
+
             const studentsData = this.students.map(student => {
                 const batch = this.batches.find(b => b.id === student.batchId);
                 return [
@@ -233,17 +199,6 @@ class InstituteManagementSystem {
                 ];
             });
 
-            // Demo mode simulation
-            /*
-            setTimeout(() => {
-                this.hideLoadingOverlay();
-                this.showAlert(`Successfully exported ${this.students.length} students to Google Sheets! (Demo Mode)`, 'success');
-                this.updateLastSyncTime();
-            }, 1500);
-            */
-            
-            // Actual implementation:
-            
             await gapi.client.sheets.spreadsheets.values.clear({
                 spreadsheetId: this.spreadsheetId,
                 range: 'Students!A2:L'
@@ -261,7 +216,7 @@ class InstituteManagementSystem {
             this.hideLoadingOverlay();
             this.showAlert(`Successfully exported ${this.students.length} students to Google Sheets!`, 'success');
             this.updateLastSyncTime();
-            
+
         } catch (error) {
             console.error('Error exporting students:', error);
             this.hideLoadingOverlay();
@@ -278,7 +233,7 @@ class InstituteManagementSystem {
 
         try {
             this.showLoadingOverlay('Exporting batches to Google Sheets...');
-            
+
             const batchesData = this.batches.map(batch => [
                 batch.id,
                 batch.batchName,
@@ -291,15 +246,24 @@ class InstituteManagementSystem {
                 batch.status
             ]);
 
-            // Demo mode simulation
-            /*
-            setTimeout(() => {
-                this.hideLoadingOverlay();
-                this.showAlert(`Successfully exported ${this.batches.length} batches to Google Sheets! (Demo Mode)`, 'success');
-                this.updateLastSyncTime();
-            }, 1500);
-            */
-            
+            await gapi.client.sheets.spreadsheets.values.clear({
+                spreadsheetId: this.spreadsheetId,
+                range: 'Batches!A2:I'
+            });
+
+            if (batchesData.length > 0) {
+                await gapi.client.sheets.spreadsheets.values.update({
+                    spreadsheetId: this.spreadsheetId,
+                    range: 'Batches!A2',
+                    valueInputOption: 'RAW',
+                    resource: { values: batchesData }
+                });
+            }
+
+            this.hideLoadingOverlay();
+            this.showAlert(`Successfully exported ${this.batches.length} batches to Google Sheets!`, 'success');
+            this.updateLastSyncTime();
+
         } catch (error) {
             console.error('Error exporting batches:', error);
             this.hideLoadingOverlay();
@@ -316,7 +280,7 @@ class InstituteManagementSystem {
 
         try {
             this.showLoadingOverlay('Exporting transactions to Google Sheets...');
-            
+
             const transactionsData = this.transactions.map(txn => [
                 txn.id,
                 txn.studentId,
@@ -329,13 +293,24 @@ class InstituteManagementSystem {
                 txn.referenceNumber
             ]);
 
-            // Demo mode simulation
-            setTimeout(() => {
-                this.hideLoadingOverlay();
-                this.showAlert(`Successfully exported ${this.transactions.length} transactions to Google Sheets! (Demo Mode)`, 'success');
-                this.updateLastSyncTime();
-            }, 1500);
-            
+            await gapi.client.sheets.spreadsheets.values.clear({
+                spreadsheetId: this.spreadsheetId,
+                range: 'Transactions!A2:I'
+            });
+
+            if (transactionsData.length > 0) {
+                await gapi.client.sheets.spreadsheets.values.update({
+                    spreadsheetId: this.spreadsheetId,
+                    range: 'Transactions!A2',
+                    valueInputOption: 'RAW',
+                    resource: { values: transactionsData }
+                });
+            }
+
+            this.hideLoadingOverlay();
+            this.showAlert(`Successfully exported ${this.transactions.length} transactions to Google Sheets!`, 'success');
+            this.updateLastSyncTime();
+
         } catch (error) {
             console.error('Error exporting transactions:', error);
             this.hideLoadingOverlay();
@@ -352,20 +327,14 @@ class InstituteManagementSystem {
 
         try {
             this.showLoadingOverlay('Syncing all data to Google Sheets...');
-            
-            // Demo mode simulation
-            setTimeout(async () => {
-                // Simulate individual exports
-                await this.exportStudentsToSheets();
-                await new Promise(resolve => setTimeout(resolve, 500));
-                await this.exportBatchesToSheets();
-                await new Promise(resolve => setTimeout(resolve, 500));
-                await this.exportTransactionsToSheets();
-                
-                this.hideLoadingOverlay();
-                this.showAlert('All data synchronized successfully! (Demo Mode)', 'success');
-            }, 1000);
-            
+
+            await this.exportStudentsToSheets();
+            await this.exportBatchesToSheets();
+            await this.exportTransactionsToSheets();
+
+            this.hideLoadingOverlay();
+            this.showAlert('All data synchronized successfully!', 'success');
+
         } catch (error) {
             console.error('Error syncing data:', error);
             this.hideLoadingOverlay();
@@ -382,36 +351,34 @@ class InstituteManagementSystem {
 
         try {
             this.showLoadingOverlay('Importing data from Google Sheets...');
-            
-            // Demo mode simulation
-            setTimeout(() => {
-                this.hideLoadingOverlay();
-                this.showAlert('Data import completed successfully! (Demo Mode)', 'success');
-                this.updateDashboard();
-                this.renderTables();
-            }, 2000);
-            
-            // Actual implementation would fetch data from sheets:
-            
+
             const studentsResponse = await gapi.client.sheets.spreadsheets.values.get({
                 spreadsheetId: this.spreadsheetId,
                 range: 'Students!A2:L'
             });
-            
+
             const batchesResponse = await gapi.client.sheets.spreadsheets.values.get({
                 spreadsheetId: this.spreadsheetId,
                 range: 'Batches!A2:I'
             });
-            
+
             const transactionsResponse = await gapi.client.sheets.spreadsheets.values.get({
                 spreadsheetId: this.spreadsheetId,
                 range: 'Transactions!A2:I'
             });
-            
+
             // Process and merge the imported data
-            this.processImportedData(studentsResponse.result.values, batchesResponse.result.values, transactionsResponse.result.values);
-            
-            
+            this.processImportedData(
+                studentsResponse.result.values,
+                batchesResponse.result.values,
+                transactionsResponse.result.values
+            );
+
+            this.hideLoadingOverlay();
+            this.showAlert('Data import completed successfully!', 'success');
+            this.updateDashboard();
+            this.renderTables();
+
         } catch (error) {
             console.error('Error importing data:', error);
             this.hideLoadingOverlay();
