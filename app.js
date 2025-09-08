@@ -11,11 +11,10 @@ class InstituteManagementSystem {
         this.paymentModes = ["Cash", "Cheque", "Bank Transfer", "UPI", "Card"];
         
         // Google Sheets Configuration
-        this.googleConfig = {
-    clientId: "494546394536-b3hq13dh2qpd6o2jrj0o2un9i3ffjdn3.apps.googleusercontent.com"
-    apiKey: "AIzaSyADP_Ed1S5EM2YiKbpN8qXMfy4y5a0lh2U", 
- discoveryDocs: ["https://sheets.googleapis.com/$discovery/rest?version=v4"],
-    scopes: "https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file"
+        this.googleConfig = {clientId: "494546394536-b3hq13dh2qpd6o2jrj0o2un9i3ffjdn3.apps.googleusercontent.com",
+            apiKey: "AIzaSyADP_Ed1S5EM2YiKbpN8qXMfy4y5a0lh2U", 
+             discoveryDocs: ["https://sheets.googleapis.com/$discovery/rest?version=v4"],
+                scopes: "https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file"
 };
         
         this.isGoogleSheetsConnected = false;
@@ -45,10 +44,10 @@ class InstituteManagementSystem {
         try {
             // For demo purposes, we'll simulate the API initialization
             // In production, replace this with actual Google API initialization
-            console.log('Google API initialized (Demo Mode)');
+            console.log('Google API initialized');
             
             // Uncomment for actual Google API integration:
-            /*
+            
             await new Promise((resolve, reject) => {
                 gapi.load('auth2:client', resolve);
             });
@@ -59,7 +58,7 @@ class InstituteManagementSystem {
                 discoveryDocs: this.googleConfig.discoveryDocs,
                 scope: this.googleConfig.scopes
             });
-            */
+            
         } catch (error) {
             console.error('Error initializing Google API:', error);
             this.showAlert('Google Sheets API initialization failed. Running in offline mode.', 'warning');
@@ -88,7 +87,7 @@ class InstituteManagementSystem {
             }, 2000);
             
             // Actual Google OAuth implementation:
-            /*
+            
             const authInstance = gapi.auth2.getAuthInstance();
             const user = await authInstance.signIn();
             
@@ -102,7 +101,7 @@ class InstituteManagementSystem {
             
             // Create or locate the management spreadsheet
             await this.createMantraSpreadsheet();
-            */
+            
         } catch (error) {
             console.error('Error connecting to Google Sheets:', error);
             this.hideLoadingOverlay();
@@ -121,7 +120,7 @@ class InstituteManagementSystem {
             this.showAlert('Disconnected from Google Sheets', 'info');
             
             // Actual implementation:
-            /*
+            
             const authInstance = gapi.auth2.getAuthInstance();
             authInstance.signOut();
             
@@ -131,7 +130,7 @@ class InstituteManagementSystem {
             this.lastSyncTime = null;
             this.updateGoogleSheetsUI();
             this.showAlert('Disconnected from Google Sheets', 'info');
-            */
+            
         } catch (error) {
             console.error('Error disconnecting from Google Sheets:', error);
             this.showAlert('Error disconnecting: ' + error.message, 'error');
@@ -146,7 +145,7 @@ class InstituteManagementSystem {
             console.log('Created demo spreadsheet:', this.spreadsheetId);
             
             // Actual implementation:
-            /*
+            
             const response = await gapi.client.sheets.spreadsheets.create({
                 properties: {
                     title: `Mantra Computer Institute - ${new Date().toLocaleDateString()}`
@@ -163,7 +162,7 @@ class InstituteManagementSystem {
             
             // Set up headers for each sheet
             await this.setupSheetHeaders();
-            */
+            
         } catch (error) {
             console.error('Error creating spreadsheet:', error);
             throw error;
@@ -194,7 +193,7 @@ class InstituteManagementSystem {
         console.log('Demo: Setting up sheet headers', headers);
         
         // Actual implementation:
-        /*
+        
         for (const [sheetName, headerRow] of Object.entries(headers)) {
             await gapi.client.sheets.spreadsheets.values.update({
                 spreadsheetId: this.spreadsheetId,
@@ -203,7 +202,7 @@ class InstituteManagementSystem {
                 resource: { values: [headerRow] }
             });
         }
-        */
+        
     }
 
     // Export Students to Google Sheets
@@ -242,7 +241,7 @@ class InstituteManagementSystem {
             }, 1500);
             
             // Actual implementation:
-            /*
+            
             await gapi.client.sheets.spreadsheets.values.clear({
                 spreadsheetId: this.spreadsheetId,
                 range: 'Students!A2:L'
@@ -260,7 +259,7 @@ class InstituteManagementSystem {
             this.hideLoadingOverlay();
             this.showAlert(`Successfully exported ${this.students.length} students to Google Sheets!`, 'success');
             this.updateLastSyncTime();
-            */
+            
         } catch (error) {
             console.error('Error exporting students:', error);
             this.hideLoadingOverlay();
@@ -389,7 +388,7 @@ class InstituteManagementSystem {
             }, 2000);
             
             // Actual implementation would fetch data from sheets:
-            /*
+            
             const studentsResponse = await gapi.client.sheets.spreadsheets.values.get({
                 spreadsheetId: this.spreadsheetId,
                 range: 'Students!A2:L'
@@ -407,7 +406,7 @@ class InstituteManagementSystem {
             
             // Process and merge the imported data
             this.processImportedData(studentsResponse.result.values, batchesResponse.result.values, transactionsResponse.result.values);
-            */
+            
             
         } catch (error) {
             console.error('Error importing data:', error);
