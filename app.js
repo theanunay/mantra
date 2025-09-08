@@ -5,8 +5,8 @@ class InstituteManagementSystem {
         this.batches = [];
         this.transactions = [];
         this.courses = [
-            "Basic Computer", "Advanced Excel", "Web Development", 
-            "Graphic Design", "Tally", "Data Entry"
+            "ADCA", "Advanced Excel", "Web Development", 
+            "Graphic Design", "Tally Prime", "Data Entry"
         ];
         this.paymentModes = ["Cash", "Cheque", "Bank Transfer", "UPI", "Card"];
         
