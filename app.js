@@ -234,11 +234,13 @@ class InstituteManagementSystem {
             });
 
             // Demo mode simulation
+            /*
             setTimeout(() => {
                 this.hideLoadingOverlay();
                 this.showAlert(`Successfully exported ${this.students.length} students to Google Sheets! (Demo Mode)`, 'success');
                 this.updateLastSyncTime();
             }, 1500);
+            */
             
             // Actual implementation:
             
@@ -290,11 +292,13 @@ class InstituteManagementSystem {
             ]);
 
             // Demo mode simulation
+            /*
             setTimeout(() => {
                 this.hideLoadingOverlay();
                 this.showAlert(`Successfully exported ${this.batches.length} batches to Google Sheets! (Demo Mode)`, 'success');
                 this.updateLastSyncTime();
             }, 1500);
+            */
             
         } catch (error) {
             console.error('Error exporting batches:', error);
